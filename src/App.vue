@@ -1,9 +1,9 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import DataSheet from './components/dataSheet.vue'
 </script>
 
 <template>
-  <HelloWorld/>
+  <DataSheet/>
 </template>
 
 <style scoped>

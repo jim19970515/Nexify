@@ -20,37 +20,38 @@ const getData = async()=>{
     
   }
 }
-
 /*資料輸入區*/
-const temp = ref(false)
-const tempData = reactive({
+const defaultDate = ref([]) //空陣列存放tempData
+const tempData = ({
   Name:'',
-  DateOfBirth:'2022-03-30',
-  Salary:null,
+  DateOfBirth:'',
+  Salary:50000,
   Address:'',
 })
 
-/*儲存新資料 上傳新資料*/
-const updateData = ref([])
-const addData = () =>{
-  if(!tempData.Name || tempData.DateOfBirth == '2022-03-30' || !tempData.Salary || !tempData.Address){
-    errorMessage.value = '請填完所有資料'
+const addData = ()=>{
+  if(arrayData.value.length == 0){
+    errorMessage.value = '請先撈取資料'
   }else{
     errorMessage.value =''
-    updateData.value = JSON.parse(JSON.stringify(arrayData.value));
-    updateData.value.push({...tempData})
-    updateFn()
-    tempData.Name = '';
-    tempData.DateOfBirth = '2022-03-30';
-    tempData.Salary = null;
-    tempData.Address = '';
+    defaultDate.value.push(JSON.parse(JSON.stringify(tempData)))
   }
-}   
+  }
 /*上傳新資料*/
-const updateFn = async()=>{
+const updataFn = async()=>{
   try {
-    await axios.post('http://nexifytw.mynetgear.com:45000/api/Record/SaveRecord',updateData.value)
+    for(let item of defaultDate.value){
+    if(item.Name !== '' && item.Address !== ''){
+      errorMessage.value=''
+      arrayData.value = arrayData.value.concat(JSON.parse(JSON.stringify(defaultDate.value)))
+      defaultDate.value = []
+      console.log(arrayData.value);
+    }else{
+      errorMessage.value = '請填完所有資料'
+    }
+    await axios.post('http://nexifytw.mynetgear.com:45000/api/Record/SaveRecords',arrayData.value)
     getData()
+  }
   } catch (error) {
     console.error('資料儲存失敗', error);
     errorMessage.value = "資料儲存失敗，請稍後再試。";
@@ -61,8 +62,8 @@ const updateFn = async()=>{
   <div class="flex justify-center items-center bg-gray-400 h-screen sm:px-0 px-4">
     <div class="w-full sm:w-[60%] min-h-[50%] sm:p-8 p-4 sm:mx-0 rounded-2xl bg-white">
       <div class="flex justify-between mb-4 overflow-auto">
-        <button class="px-4 py-2 rounded-sm bg-blue-700 hover:bg-blue-800 active:bg-blue-700 text-white" @click="temp=!temp">Add</button>
-        <button class="px-4 py-2 rounded-sm bg-green-700 hover:bg-green-800 active:bg-green-900 text-white" @click="addData">Save</button>
+        <button class="px-4 py-2 rounded-sm bg-blue-700 hover:bg-blue-800 active:bg-blue-700 text-white" @click="addData">Add</button>
+        <button class="px-4 py-2 rounded-sm bg-green-700 hover:bg-green-800 active:bg-green-900 text-white" @click="updataFn">Save</button>
         <button class="px-4 py-2 rounded-sm bg-red-700 hover:bg-red-800 active:bg-red-900 text-white" @click="getData">Update</button>
       </div>
       <div class="overflow-auto">
@@ -76,13 +77,13 @@ const updateFn = async()=>{
           </tr>
         </thead>
         <tbody>
-          <tr v-if="temp" class="border-b border-b-gray-300">
-            <td class="w-1/4"><input class="border my-1 w-36 pl-2 ml-2" type="text" v-model.trim="tempData.Name"></td>
-            <td class="w-1/4"><input class="border my-1 w-36 ml-2" type="date" value="2022-03-30" v-model="tempData.DateOfBirth"></td>
+          <tr  class="border-b border-b-gray-300" v-for="(item,index) in defaultDate" :key="index">
+            <td class="w-1/4"><input class="border my-1 w-36 pl-2 ml-2" type="text" v-model.trim="item.Name"></td>
+            <td class="w-1/4"><input class="border my-1 w-36 ml-2" type="date" v-model="item.DateOfBirth"></td>
             <td class="w-1/4">
-              <input type="range" min="0" max="100000" value="50000" v-model.number="tempData.Salary">
+              <input type="range" min="0" max="100000" value="50000" v-model.number="item.Salary">
             </td>
-            <td class="w-1/4"> <input class="border my-1 pl-2 ml-2" type="text" v-model.trim="tempData.Address"></td>
+            <td class="w-1/4"> <input class="border my-1 pl-2 ml-2" type="text" v-model.trim="item.Address"></td>
           </tr>
           <tr class="border-b border-b-gray-300" v-for="(item,index) in arrayData" :key="index">
             <td class="w-1/4"><input class="border my-1 w-36 pl-2 ml-2" type="text" v-model.trim="item.Name"></td>
