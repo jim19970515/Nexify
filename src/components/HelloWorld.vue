@@ -59,8 +59,8 @@ const updateFn = async()=>{
 </script>
 <template>
   <div class="flex justify-center items-center bg-gray-400 h-screen sm:px-0 px-4">
-    <div class="w-full sm:w-[60%] sm:p-8 p-4 sm:mx-0 rounded-2xl bg-white">
-      <div class="flex justify-between mb-4">
+    <div class="w-full sm:w-[60%] min-h-[50%] sm:p-8 p-4 sm:mx-0 rounded-2xl bg-white">
+      <div class="flex justify-between mb-4 overflow-auto">
         <button class="px-4 py-2 rounded-sm bg-blue-700 hover:bg-blue-800 active:bg-blue-700 text-white" @click="temp=!temp">Add</button>
         <button class="px-4 py-2 rounded-sm bg-green-700 hover:bg-green-800 active:bg-green-900 text-white" @click="addData">Save</button>
         <button class="px-4 py-2 rounded-sm bg-red-700 hover:bg-red-800 active:bg-red-900 text-white" @click="getData">Update</button>
